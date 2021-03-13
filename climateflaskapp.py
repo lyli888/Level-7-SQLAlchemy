@@ -28,9 +28,8 @@ app = Flask(__name__)
 #List all available routes
 @app.route("/")
 def welcome():
-    """Welcome to my Hawaii Climate App. Step into my office!"""
     return (
-        f"Available Routes:<br/>"
+        f"Welcome to Ly's Hawaii Climate App! Available Routes:<br/>"
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations</br>"
         f"/api/v1.0/tobs</br>"
