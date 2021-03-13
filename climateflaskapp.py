@@ -52,7 +52,7 @@ def precipitation():
     #Convert the query results to a dictionary using `date` as the key and `prcp` as the value.
 
     all_precipitation = []
-    for name, age, sex in results:
+    for date in precipitation_results:
         precipitation_dict = {}
         passenger_dict["date"] = date
         passenger_dict["prcp"] = prcp
