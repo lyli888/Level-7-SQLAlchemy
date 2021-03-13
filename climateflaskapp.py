@@ -73,10 +73,9 @@ def stations():
     
     session.close()
     
-    return jsonify(s_results)
+    return jsonify(station_results)
 
-    @app.route("/api/v1.0/tobs")
-
+@app.route("/api/v1.0/tobs")
 def tobs():
     
     """Temperature Over Past Year Of Data"""
