@@ -43,7 +43,6 @@ def precipitation():
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    """See Precipitation By Date"""
     #Query Precipitation
     precipitation_results = session.query(Measurement.prcp).all()
 
@@ -63,8 +62,7 @@ def precipitation():
 #List Stations
 @app.route("/api/v1.0/stations")
 def stations():
-    
-    """All Stations"""
+
     
     session = Session(engine)
     
@@ -77,7 +75,6 @@ def stations():
 @app.route("/api/v1.0/tobs")
 def tobs():
     
-    """Temperature Over Past Year Of Data"""
     
     session = Session(engine)
     
@@ -86,8 +83,13 @@ def tobs():
     tobs_results = session.query(Measurement.date, Measurement.station, Measurement.tobs).filter(Measurement.date >= prev_year_date).all()
     
     session.close()
-    
+  
     return jsonify(tobs_results)
+
+@app.route("/api/v1.0/<start>")
+def start(date):
+    start_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= date).all()
+    return jsonify(day_temp_results)
 
 if __name__ == '__main__':
     app.run(debug=True)
