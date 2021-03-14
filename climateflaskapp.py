@@ -6,8 +6,8 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 
-import time
 import datetime as dt
+from datetime import timedelta
 
 import pandas as pd
 import numpy as np
@@ -36,8 +36,8 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations</br>"
         f"/api/v1.0/tobs</br>"
-        f"/api/v1.0/<start></br>"
-        f"/api/v1.0/<start>/<end>"
+        f"/api/v1.0/start/<start><br/>"
+        f"/api/v1.0/start/end/<start>/<end>"
     )
 
 #Precipitation By Date
@@ -45,55 +45,50 @@ def welcome():
 def precipitation():
     # Create our session (link) from Python to the DB
     session = Session(engine)
-
     #Query Precipitation
- 
-    precipitation_results = session.query(Measurement.date, Measurement.prcp).all()
-
+    precipitation_results = session.query(Measurement.date, Measurement.prcp).all()   
     #Close Session
-    session.close()
-    
-    #Convert the query results to a dictionary using `date` as the key and `prcp` as the value.
-
-    precipitation_dict = {}
-        
-
-    return jsonify(precipitation_results)
+    session.close() 
+    #Convert the query results to a dictionary using `date` as the key and `prcp` as the value.  
+    pdict = dict(precipitation_results)   
+    return jsonify(pdict)
 
 
 #List Stations
 @app.route("/api/v1.0/stations")
-def stations():
-    
+def stations():  
     session = Session(engine)
     station_results = session.query(Station.station, Station.name).all()
-    session.close()
-    
+    session.close()  
     return jsonify(station_results)
+
 
 #Temperature Past Year
 @app.route("/api/v1.0/tobs")
-def tobs():
-    
+def tobs():   
     session = Session(engine)
-    prev_year_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
-    prev_year_date = dt.date(prev_year_date) - dt.timedelta(days=365)
-    tobs_results = session.query(Measurement.date, Measurement.station, Measurement.tobs).filter(Measurement.date >= prev_year_date).all()
+    tobs_results = session.query(Measurement.date, Measurement.station, Measurement.tobs).filter(Measurement.date >= '2016-08-23').all()
     session.close()
-  
     return jsonify(tobs_results)
 
 #Start
-@app.route("/api/v1.0/<start>")
-def start(date):
-    start_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= date).all()
-    return jsonify(day_temp_results)
+@app.route("/api/v1.0/start/<start_date>")
+def weather(start_date):
+    session = Session(engine)
+    weather_condition = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start_date).all()
+    weather_since = list(np.ravel(weather_condition))
+    session.close() 
+    return jsonify(weather_since)
 
 #Start/End
-@app.route("/api/v1.0/<start>/<end>")
-def startend(start,end):
-    start_end_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
-    return jsonify(multi_day_temp_results)
+@app.route("/api/v1.0/start/end/<start>/<end>")
+def condition(start, end):
+    session = Session(engine)
+    weather = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+    weather_betweendates = list(np.ravel(weather))
+    return jsonify(weather_betweendates)
 
 if __name__ == '__main__':
     app.run(debug=True)
