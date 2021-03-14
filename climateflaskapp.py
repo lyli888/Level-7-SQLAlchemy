@@ -5,6 +5,8 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+
+import time
 import datetime as dt
 
 import pandas as pd
@@ -45,7 +47,8 @@ def precipitation():
     session = Session(engine)
 
     #Query Precipitation
-    precipitation_results = session.query(Measurement.prcp).all()
+ 
+    precipitation_results = session.query(Measurement.date, Measurement.prcp).all()
 
     #Close Session
     session.close()
@@ -53,17 +56,10 @@ def precipitation():
     #Convert the query results to a dictionary using `date` as the key and `prcp` as the value.
 
     precipitation_dict = {}
-    date_list = []
-    prcp_list = []
-    
-    for date in precipitation_results:
         
-        current_date = precipitation_results["date"] 
-        current_prcp = int(precipitation_results["prcp"])
-        
-        precipitation_dict = precipitation_dict.append{current_date:current_prcp}
 
-    return jsonify(precipitation_dict)
+    return jsonify(precipitation_results)
+
 
 #List Stations
 @app.route("/api/v1.0/stations")
