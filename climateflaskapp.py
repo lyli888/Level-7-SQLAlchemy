@@ -36,8 +36,8 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations</br>"
         f"/api/v1.0/tobs</br>"
-        f"/api/v1.0/start/<start><br/>"
-        f"/api/v1.0/start/end/<start>/<end>"
+        f"/api/v1.0/Enter a start date in yyyy-mm-dd<br/>"
+        f"/api/v1.0/Enter start date in yyyy-mm-dd/Enter end date in yyyy-mm-dd"
     )
 
 #Precipitation By Date
@@ -72,23 +72,42 @@ def tobs():
     return jsonify(tobs_results)
 
 #Start
-@app.route("/api/v1.0/start/<start_date>")
-def weather(start_date):
+@app.route("/api/v1.0/<start_date>")
+def one_date(start_date):
+    # Create our session (link) from Python to the DB
     session = Session(engine)
-    weather_condition = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-        filter(Measurement.date >= start_date).all()
-    weather_since = list(np.ravel(weather_condition))
-    session.close() 
-    return jsonify(weather_since)
+    # query min/max/avg tobs from a start date
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+    filter(Measurement.date >= start_date).all()  
+    session.close()
+    # Create a dictionary for min/max/avg tobs
+    date_list = []
+    for min, avg, max in results:
+        date_list_dict = {}
+        date_list_dict["min_temp"] = min
+        date_list_dict["avg_temp"] = avg
+        date_list_dict["max_temp"] = max
+        date_list.append(date_list_dict) 
+    return jsonify(date_list)
 
-#Start/End
-@app.route("/api/v1.0/start/end/<start>/<end>")
-def condition(start, end):
+#End
+@app.route("/api/v1.0/<start_date>/<end_date>")
+def two_dates(start_date,end_date):
+    # Create our session (link) from Python to the DB
     session = Session(engine)
-    weather = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-        filter(Measurement.date >= start).filter(Measurement.date <= end).all()
-    weather_betweendates = list(np.ravel(weather))
-    return jsonify(weather_betweendates)
+    # query min/max/avg tobs from a start date
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+    filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+    session.close()  
+    # Create a dictionary for min/max/avg tobs between the two dates
+    two_date_list = []
+    for min, avg, max in results:
+        two_date_dict = {}
+        two_date_dict["Min. Temp (F)"] = min
+        two_date_dict["Avg. Temp (F)"] = avg
+        two_date_dict["Max Temp (F)"] = max
+        two_date_list.append(two_date_dict) 
+    return jsonify(two_date_list)
 
 if __name__ == '__main__':
     app.run(debug=True)
