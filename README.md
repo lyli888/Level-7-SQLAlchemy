@@ -1,5 +1,7 @@
 ## Step 1 - Climate Analysis and Exploration
 
+NOTE: This is a back-end application that collects data from a database engine that can handle HUGE amounts of data, which can then be queried/filtered through the browser. It requires installation of Python anaconda & Python environment file [PythonData.txt] as well as the referenced import libraries.
+
 To begin, use Python and SQLAlchemy to do basic climate analysis and data exploration of your climate database. All of the following analysis should be completed using SQLAlchemy ORM queries, Pandas, and Matplotlib.
 
 * Use SQLAlchemy `create_engine` to connect to your sqlite database.
