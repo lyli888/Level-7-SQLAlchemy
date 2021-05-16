@@ -1,6 +1,8 @@
-## Step 1 - Climate Analysis and Exploration
+# Climate Flask SQLApp
 
 ### This is a back-end application that stores data in a SQL engine, which can then be queried/filtered through the browser. Refer to [Screenshots](https://github.com/lyli888/Level-7-SQLAlchemy/tree/main/Screenshots%20Flask%20App%20Routes) project results. 
+
+## Step 1 - Climate Analysis and Exploration 
 
 To begin, use Python and SQLAlchemy to do basic climate analysis and data exploration of your climate database. All of the following analysis should be completed using SQLAlchemy ORM queries, Pandas, and Matplotlib.
 
